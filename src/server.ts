@@ -1,7 +1,7 @@
-import { app } from "./app.js";
-import dotenv from "dotenv";
+import "dotenv/config";
 
-dotenv.config();
+import { app } from "./app.ts";
+
 
 app.listen(3000, () => {
   console.log("SERVIDOR ATIVO 🟢");
