@@ -1,28 +1,35 @@
 import { pool } from "../database/pg.database.js";
+import { logger } from "../utils/logger.ts";
 
-interface IHasNewOrderService {
-    userID: Number
-    existOsList: string[]
+
+export interface IOrderServiceRepository {
+  hasNewOs({ userIDLoged, osIDsList }: IHasNewOs): any;
 }
-export class OrderServiceRepository {
-    static hasNewOrderService({ userID, existOsList }: IHasNewOrderService) {
 
-        const queryIN = existOsList.reduce((acc, id, index) => {
-            if (!index) {
-                acc += `'${id}'`
+interface IHasNewOs {
+  userIDLoged: number;
+  osIDsList: string[];
+}
 
-            } else {
-                acc += `,'${id}'`
-            }
+export class OrderServiceRepository implements IOrderServiceRepository {
+  async hasNewOs({ userIDLoged, osIDsList }: IHasNewOs) {
+    const queryIN = osIDsList.reduce((acc, id, index) => {
+      if (!index) {
+        acc += `${id}`;
+      } else {
+        acc += `,${id}`;
+      }
+      return acc;
+    }, "");
 
-            return acc
+    const query = `SELECT * FROM os WHERE user_id = ${userIDLoged} AND id NOT IN (${queryIN})`;
+    try {
+      const result = await pool.query(query);
 
-        }, "")
-
-        try {
-            const result = pool.query(`SELECT * FROM os WHERE userID=${userID} AND id IN (${queryIN})`)
-        } catch (error) {
-
-        }
+      return result.rows;
+    } catch (error: any) {
+      await logger(`[REP]: ${error.errors} | user:${userIDLoged} | param:${osIDsList}`);
+      return [];
     }
+  }
 }

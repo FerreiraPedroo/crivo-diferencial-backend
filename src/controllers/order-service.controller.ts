@@ -1,23 +1,30 @@
 // import { pool } from "../database/pg.database.ts";
-import { orderServiceService } from "../services/order-service/order-service.service.ts";
-
+import { NextFunction } from "express";
+import { OrderServiceRepository } from "../repositories/order-service.repository.ts";
+import { OrderServiceService } from "../services/order-service/order-service.service.ts";
+import { logger } from "../utils/logger.ts";
+import { ActivityRepository } from "../repositories/activity.repository.ts";
 
 export class OrderServiceController {
-  constructor() { }
   static async getOrderService(req, res, next) {
-    const { userLoged } = req;
+    const userIDLoged = 1;
     const { osIDs } = req.query;
 
-    let osIDsList = "";
-    if (osIDs) {
-      osIDsList = osIDs.split("|");
+    try {
+      const orderServiceRepository = new OrderServiceRepository();
+      const activityRepository = new ActivityRepository();
+
+      const osService = new OrderServiceService(
+        orderServiceRepository,
+        activityRepository
+      );
+
+
+      const osList = await osService.hasNewOrderService({ userIDLoged, osIDs });
+
+      res.send(osList);
+    } catch (error: any) {
+      await logger(`[CRTL]: ${error.message}`);
     }
-
-    const osService = new orderServiceService();
-
-
-    const osList = osService.hasNewOrderService({ userLoged, osIDsList });
-
-    console.log(osIDs);
   }
 }

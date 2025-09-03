@@ -1,32 +1,52 @@
-// import { pool } from "../../database/pg.database.ts";
+import { IActivityRepository } from "../../repositories/activity.repository.ts";
+import { IOrderServiceRepository } from "../../repositories/order-service.repository.ts";
+import { logger } from "../../utils/logger.ts";
 
-import { Pool } from "pg";
+interface IHasNewOrderService {
+  userIDLoged: number;
+  osIDs: string;
+}
 
-export class orderServiceService {
-    constructor() {
+interface IOrderService {
+  hasNewOrderService({ userIDLoged, osIDs }: IHasNewOrderService): any;
+}
 
-    }
+export class OrderServiceService implements IOrderService {
+  private orderServiceRepository: IOrderServiceRepository;
+  private activityRepository: IActivityRepository;
 
-    async hasNewOrderService({ userLogerd, osIDs }) {
+  constructor(
+    orderServiceRepository: IOrderServiceRepository,
+    activityRepository: IActivityRepository
+  ) {
+    this.orderServiceRepository = orderServiceRepository;
+    this.activityRepository = activityRepository;
+  }
 
-        const pool = new Pool({
-            connectionString: "postgres://postgres:crivo@127.0.0.1:5432/crivo"
+  async hasNewOrderService({ userIDLoged, osIDs }: IHasNewOrderService) {
+    try {
+      let osIDsList = [];
+
+      if (osIDs) {
+        osIDsList.push(...osIDs.split("|"));
+      }
+
+      const existsNewOs = await this.orderServiceRepository.hasNewOs({
+        userIDLoged,
+        osIDsList,
+      });
+
+      for (let i = 0; i < existsNewOs.length; i++) {
+
+        const osActivity = await this.activityRepository.getActivityList({
+          osID: existsNewOs[i].id,
         });
-        console.log(pool)
-        console.log(pool.connect((e) => {
-            console.log(e)
-        }))
+        existsNewOs[i].activity = osActivity;
+      }
 
-
-
-        try {
-            const result = await pool.query("SELECT * FROM os");
-            console.log("result")
-            console.log(result)
-            console.log(pool)
-        } catch (error) {
-
-        }
-
+      return existsNewOs;
+    } catch (error: any) {
+      await logger(`[SER]: ${error.errors}`);
     }
+  }
 }
