@@ -6,11 +6,19 @@ interface IHasNewActivity {
   osID: number;
 }
 
+interface IUploadActivityPhoto {
+  osID: number;
+  activityID: number;
+  photoType: number;
+  position: number;
+  file: Express.Multer.File;
+}
+
 interface IActivity {
   hasNewActivity({ userIDLoged, osID }: IHasNewActivity): any;
 }
 
-export class ActivityService implements IActivity {
+export class ExistsActivityService implements IActivity {
   private activityRepository: IActivityRepository;
 
   constructor(activityRepository: IActivityRepository) {
@@ -19,7 +27,6 @@ export class ActivityService implements IActivity {
 
   async hasNewActivity({ userIDLoged, osID }: IHasNewActivity) {
     try {
-
       const existsNewOs = await this.activityRepository.getActivityList({
         osID,
       });
@@ -29,4 +36,5 @@ export class ActivityService implements IActivity {
       await logger(`[SER]: ${error.errors}`);
     }
   }
+
 }

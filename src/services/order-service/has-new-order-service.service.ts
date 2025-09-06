@@ -11,7 +11,7 @@ interface IOrderService {
   hasNewOrderService({ userIDLoged, osIDs }: IHasNewOrderService): any;
 }
 
-export class OrderServiceService implements IOrderService {
+export class HasNewOrderServiceService implements IOrderService {
   private orderServiceRepository: IOrderServiceRepository;
   private activityRepository: IActivityRepository;
 
@@ -25,10 +25,10 @@ export class OrderServiceService implements IOrderService {
 
   async hasNewOrderService({ userIDLoged, osIDs }: IHasNewOrderService) {
     try {
-      let osIDsList = [];
+      let osIDsList: string[] = [];
 
       if (osIDs) {
-        osIDsList.push(...osIDs.split("|"));
+        osIDsList.push(...osIDs.split("|").filter((v) => !!v));
       }
 
       const existsNewOs = await this.orderServiceRepository.hasNewOs({
@@ -37,16 +37,27 @@ export class OrderServiceService implements IOrderService {
       });
 
       for (let i = 0; i < existsNewOs.length; i++) {
-
-        const osActivity = await this.activityRepository.getActivityList({
+        let osActivity = await this.activityRepository.getActivityByOsId({
           osID: existsNewOs[i].id,
         });
+
+        if (osActivity.length) {
+          osActivity = osActivity.map((a: any) => {
+            a.beforePhoto = [null, null, null];
+            a.afterPhoto = [null, null, null];
+            return a;
+          });
+        }
+
         existsNewOs[i].activity = osActivity;
       }
 
       return existsNewOs;
     } catch (error: any) {
-      await logger(`[SER]: ${error.errors}`);
+      await logger(
+        `[SER]: ${error.errors} | userIDLoged:${userIDLoged} | osIDs:${osIDs} `
+      );
+      return [];
     }
   }
 }
