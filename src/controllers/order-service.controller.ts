@@ -7,6 +7,7 @@ import { SyncActivityService } from "../services/activity/sync-activity.service.
 import { HasNewOrderServiceService } from "../services/order-service/has-new-order-service.service.ts";
 
 import { logger } from "../utils/logger.ts";
+import { ActivityPhotoRepository } from "../repositories/os-activity-photo.repository.ts";
 
 export class OrderServiceController {
   static async syncOrderService(
@@ -17,19 +18,21 @@ export class OrderServiceController {
     const userIDLoged = 1;
 
     try {
-      const { osID, activityID, photoType, position } = req.body;
+      const { osID, activityID, photoType, index } = req.body;
       const file = req.file;
 
-      if (!(osID && activityID && photoType && position && file)) {
+      if (!(osID && activityID && photoType && index && file)) {
         throw "Está faltando alguma informação da foto.";
       }
 
-      const activityRepository = new ActivityRepository();
+      const activityPhotoRepository = new ActivityPhotoRepository();
       const orderServiceRepository = new OrderServiceRepository();
+      const activityRepository = new ActivityRepository();
 
       const syncActivity = new SyncActivityService(
         orderServiceRepository,
-        activityRepository
+        activityRepository,
+        activityPhotoRepository,
       );
 
       const photoID = await syncActivity.syncActivity({
@@ -37,7 +40,7 @@ export class OrderServiceController {
         osID,
         activityID,
         photoType,
-        position,
+        index,
         file,
       });
 

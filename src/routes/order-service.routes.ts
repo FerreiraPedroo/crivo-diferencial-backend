@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { OrderServiceController } from "../controllers/order-service.controller.ts";
-const uploadFile = multer({ dest: "/photos" });
+const uploadFile = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
 

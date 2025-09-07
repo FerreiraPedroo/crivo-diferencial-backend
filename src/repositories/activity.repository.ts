@@ -4,13 +4,6 @@ import { logger } from "../utils/logger.ts";
 export interface IActivityRepository {
   getActivityByOsId({ osID }: IGetActivityByOsId): any;
   getActivityById({ osID, activityID }: IGetActivity): any;
-  uploadActivityPhoto({
-    osID,
-    activityID,
-    photoType,
-    position,
-    file,
-  }: IUploadActivityPhoto): any;
 }
 
 interface IUploadActivityPhoto {
@@ -57,13 +50,4 @@ export class ActivityRepository implements IActivityRepository {
     }
   }
 
-  async uploadActivityPhoto({
-    osID,
-    activityID,
-    photoType,
-    position,
-    file,
-  }: IUploadActivityPhoto) {
-    return "";
-  }
 }
