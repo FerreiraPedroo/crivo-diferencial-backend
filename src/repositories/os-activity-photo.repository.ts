@@ -50,7 +50,6 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
 
     try {
       const result = await pool.query(query);
-
       return result.rows;
     } catch (error: any) {
       await logger(
@@ -71,13 +70,12 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
     fullPathFile,
   }: IActivityPhoto) {
     const query = `
-    INSERT INTO os_activity_photo (os_id, activity_id, index, type, file, size, status) 
-    VALUES (${osID}, ${activityID}, ${index}, '${photoType}', '${fullPathFile}', ${size}, 'enviado')
-    RETURNING os_id, activity_id, index, type, file, size, status`;
+    INSERT INTO os_activity_photo (os_id, activity_id, index, type, file, size, status,  client_check) 
+    VALUES (${osID}, ${activityID}, ${index}, '${photoType}', '${fullPathFile}', ${size}, 'enviado', null)
+    RETURNING os_id, activity_id, index, type, file, size, status, client_check`;
 
     try {
       const result = await pool.query(query);
-
       return result;
     } catch (error: any) {
       await logger(
@@ -107,12 +105,11 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
         size = ${size},
         status = 'enviado',
         client_check = null
-    WHERE os_activity_photo.os_id = ${osID} AND os_activity_photo.activity_id = ${activityID} AND os_activity_photo.type = '${photoType}' AND os_activity_photo.index = ${index} AND os_activity_photo.type = ${photoType}
-    `;
+    WHERE os_activity_photo.os_id = ${osID} AND os_activity_photo.activity_id = ${activityID} AND os_activity_photo.type = '${photoType}' AND os_activity_photo.index = ${index}
+    RETURNING os_id, activity_id, index, type, file, size, status, client_check`;
 
     try {
       const result = await pool.query(query);
-
       return result;
     } catch (error: any) {
       await logger(

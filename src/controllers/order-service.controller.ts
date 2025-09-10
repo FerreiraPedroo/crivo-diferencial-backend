@@ -10,6 +10,46 @@ import { logger } from "../utils/logger.ts";
 import { ActivityPhotoRepository } from "../repositories/os-activity-photo.repository.ts";
 
 export class OrderServiceController {
+  static async syncClientOrderService(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const userIDLoged = 1;
+
+    try {
+      const { osID, activityID, photoType, index } = req.body;
+
+      if (!(osID && activityID && photoType && index != undefined)) {
+        throw "Está faltando alguma informação da foto.";
+      }
+
+      const activityPhotoRepository = new ActivityPhotoRepository();
+      const orderServiceRepository = new OrderServiceRepository();
+
+      // const syncActivity = new SyncActivityService(
+      //   orderServiceRepository,
+      //   activityPhotoRepository
+      // );
+
+      // const syncClientPhoto = await syncActivity.syncClientActivity({
+      //   userIDLoged,
+      //   osID,
+      //   activityID,
+      //   photoType,
+      //   index,
+      // });
+
+      // if (!syncClientPhoto) {
+      //   throw "Foto não sincronizada.";
+      // }
+
+      // res.status(201).send({ code: 201, message: "OK", data: syncClientPhoto });
+    } catch (error: any) {
+      await logger(`[CRTL]: ${error.message}`);
+      res.status(500).send(null);
+    }
+  }
   static async syncOrderService(
     req: Request,
     res: Response,
@@ -20,7 +60,6 @@ export class OrderServiceController {
     try {
       const { osID, activityID, photoType, index } = req.body;
       const file = req.file;
-
 
       if (!(osID && activityID && photoType && index != undefined && file)) {
         throw "Está faltando alguma informação da foto.";
@@ -33,10 +72,10 @@ export class OrderServiceController {
       const syncActivity = new SyncActivityService(
         orderServiceRepository,
         activityRepository,
-        activityPhotoRepository,
+        activityPhotoRepository
       );
 
-      const photoID = await syncActivity.syncActivity({
+      const savedPhoto = await syncActivity.syncActivity({
         userIDLoged,
         osID,
         activityID,
@@ -45,11 +84,11 @@ export class OrderServiceController {
         file,
       });
 
-      if (photoID) {
+      if (!savedPhoto) {
         throw "Foto não salva.";
       }
 
-      res.status(201).send({ code: 201, message: "OK", data: { photoID } });
+      res.status(201).send({ code: 201, message: "OK", data: savedPhoto });
     } catch (error: any) {
       await logger(`[CRTL]: ${error.message}`);
       res.status(500).send(null);

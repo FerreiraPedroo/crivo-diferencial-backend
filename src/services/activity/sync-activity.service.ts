@@ -13,6 +13,14 @@ interface IUploadActivityPhoto {
   file: Express.Multer.File;
 }
 
+interface ISyncClientActivity {
+  userIDLoged: number;
+  osID: number;
+  activityID: number;
+  photoType: number;
+  index: number;
+}
+
 interface IActivity {
   syncActivity({
     userIDLoged,
@@ -77,11 +85,16 @@ export class SyncActivityService implements IActivity {
 
       if (existPhoto.length) {
         try {
-          await StorageFile.deleteFile({ fullPathFile: existPhoto[0].file });
+          await StorageFile.saveFile({
+            filePath,
+            fileName,
+            fileBuffer: file.buffer,
+          });
         } catch (error: any) {
           await logger(
-            `[SER]: Erro ao deletar o arquvo | error:${error.message}`
+            `[SER]: Erro ao salvar o arquivo | error: ${error.message}`
           );
+          throw error;
         }
 
         const updatedActivityPhoto =
@@ -93,6 +106,8 @@ export class SyncActivityService implements IActivity {
             size,
             fullPathFile: `${filePath}${fileName}`,
           });
+
+        return updatedActivityPhoto.rows[0];
       } else {
         try {
           await StorageFile.saveFile({
@@ -122,10 +137,23 @@ export class SyncActivityService implements IActivity {
         if (!savedActivityPhoto) {
           throw "Foto não foi salva.";
         }
+
+        return savedActivityPhoto.rows[0]
+
       }
     } catch (error: any) {
       await logger(`[SER]: ${error.message}`);
       return null;
     }
+  }
+
+  async syncClientActivity({
+    userIDLoged,
+    osID,
+    activityID,
+    photoType,
+    index
+  }: ISyncClientActivity){
+
   }
 }

@@ -11,5 +11,9 @@ router.post(
   uploadFile.single("photo"),
   OrderServiceController.syncOrderService
 );
+router.put(
+  "/sync"
+  OrderServiceController.syncClientOrderService
+);
 
 export { router as ordersServiceRoutes };
