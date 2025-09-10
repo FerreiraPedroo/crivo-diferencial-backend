@@ -21,7 +21,8 @@ export class OrderServiceController {
       const { osID, activityID, photoType, index } = req.body;
       const file = req.file;
 
-      if (!(osID && activityID && photoType && index && file)) {
+
+      if (!(osID && activityID && photoType && index != undefined && file)) {
         throw "Está faltando alguma informação da foto.";
       }
 

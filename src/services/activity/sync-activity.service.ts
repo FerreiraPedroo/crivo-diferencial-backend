@@ -1,4 +1,3 @@
-import path from "node:path";
 import { IActivityRepository } from "../../repositories/activity.repository.ts";
 import { IOrderServiceRepository } from "../../repositories/order-service.repository.ts";
 import { IActivityPhotoRepository } from "../../repositories/os-activity-photo.repository.ts";
@@ -53,61 +52,77 @@ export class SyncActivityService implements IActivity {
         userIDLoged,
         osID,
       });
-
-      if (!existsOs) {
-        console.log("OS")
+      if (!existsOs?.length) {
         throw "Ordem de serviço não encontrada.";
       }
 
       const existsActivity = await this.activityRepository.getActivityById({
         osID,
-        activityID
+        activityID,
       });
-
       if (!existsActivity?.length) {
-        console.log("atividade")
         throw "Atividade não encontrada.";
       }
+      const size = file.size;
+      const filePath = `uploads/os/${osID}/`;
+      const fileName = `${osID}_${activityID}_${photoType}_${index}.${file.originalname
+        .split(".")
+        .at(-1)}`;
 
-      const fullFilePath = path.join("uploads", "os", `${osID}`, `${osID}_${activityID}_${photoType}_${index}.${file.originalname.split(".").at(-1)}`)
-      const existPhoto = await this.activityPhotoRepository.getActivityPhoto({ osID, activityID, index });
+      const existPhoto = await this.activityPhotoRepository.getActivityPhoto({
+        osID,
+        activityID,
+        index,
+      });
 
       if (existPhoto.length) {
         try {
           await StorageFile.deleteFile({ fullPathFile: existPhoto[0].file });
         } catch (error: any) {
-          await logger(`[SER]: ${error.message}`);
+          await logger(
+            `[SER]: Erro ao deletar o arquvo | error:${error.message}`
+          );
         }
 
-        const savedActivityPhoto = await this.activityPhotoRepository.updateActivityPhoto({
-          osID,
-          activityID,
-          photoType,
-          index,
-          fullFilePath,
-        })
-
+        const updatedActivityPhoto =
+          await this.activityPhotoRepository.updateActivityPhoto({
+            osID,
+            activityID,
+            photoType,
+            index,
+            size,
+            fullPathFile: `${filePath}${fileName}`,
+          });
       } else {
-
         try {
-          await StorageFile.saveFile({ fullFilePath, file: fileBuffer });
+          await StorageFile.saveFile({
+            filePath,
+            fileName,
+            fileBuffer: file.buffer,
+          });
         } catch (error: any) {
-          await logger(`[SER]: ${error.message}`);
+          await logger(
+            `[SER]: Erro ao salvar o arquivo | error: ${error.message}`
+          );
+          throw error;
         }
 
-        const savedActivityPhoto = await this.activityPhotoRepository.saveActivityPhoto({ osID, activityID, photoType, file, index })
+        const fullPathFile = `${filePath}${fileName}`;
+
+        const savedActivityPhoto =
+          await this.activityPhotoRepository.saveActivityPhoto({
+            osID,
+            activityID,
+            photoType,
+            index,
+            size,
+            fullPathFile,
+          });
 
         if (!savedActivityPhoto) {
           throw "Foto não foi salva.";
         }
-
       }
-
-
-
-
-
-
     } catch (error: any) {
       await logger(`[SER]: ${error.message}`);
       return null;

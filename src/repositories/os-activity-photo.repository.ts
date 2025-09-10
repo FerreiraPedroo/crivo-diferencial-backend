@@ -8,14 +8,15 @@ export interface IActivityPhotoRepository {
     activityID,
     photoType,
     index,
-    fileBuffer,
+    size,
+    fullPathFile,
   }: IActivityPhoto): any;
   updateActivityPhoto({
     osID,
     activityID,
     photoType,
     index,
-    fullFilePath,
+    fullPathFile,
   }: IUpdateActivityPhoto): any;
 }
 
@@ -24,7 +25,8 @@ interface IActivityPhoto {
   activityID: number;
   photoType: number;
   index: number;
-  fileBuffer: Buffer;
+  size: number;
+  fullPathFile: string;
 }
 
 interface IUpdateActivityPhoto {
@@ -32,7 +34,8 @@ interface IUpdateActivityPhoto {
   activityID: number;
   photoType: number;
   index: number;
-  fullFilePath: string;
+  size: number;
+  fullPathFile: string;
 }
 
 interface IGetActivityPhoto {
@@ -50,8 +53,12 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
 
       return result.rows;
     } catch (error: any) {
-      await logger(`[REP]: ${error.errors} | os:${osID} | activity:${activityID} index:${index}`);
-      throw new Error(`[REP]: ${error.errors} | os:${osID} | activity:${activityID} index:${index}`);
+      await logger(
+        `[REP]: ${error.errors} | os:${osID} | activity:${activityID} index:${index}`
+      );
+      throw new Error(
+        `[REP]: ${error.errors} | os:${osID} | activity:${activityID} index:${index}`
+      );
     }
   }
 
@@ -60,9 +67,30 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
     activityID,
     photoType,
     index,
-    fileBuffer,
+    size,
+    fullPathFile,
   }: IActivityPhoto) {
-    return "";
+    const query = `
+    INSERT INTO os_activity_photo (os_id, activity_id, index, type, file, size, status) 
+    VALUES (${osID}, ${activityID}, ${index}, '${photoType}', '${fullPathFile}', ${size}, 'enviado')
+    RETURNING os_id, activity_id, index, type, file, size, status`;
+
+    try {
+      const result = await pool.query(query);
+
+      return result;
+    } catch (error: any) {
+      await logger(
+        `[REP]: ${JSON.stringify(
+          error
+        )} | os:${osID} | activity:${activityID} index:${index}`
+      );
+      throw new Error(
+        `[REP]: ${JSON.stringify(
+          error
+        )} | os:${osID} | activity:${activityID} index:${index}`
+      );
+    }
   }
 
   async updateActivityPhoto({
@@ -70,13 +98,16 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
     activityID,
     photoType,
     index,
-    fullFilePath,
+    size,
+    fullPathFile,
   }: IUpdateActivityPhoto) {
-
     const query = `
     UPDATE os_activity_photo 
-    SET file = '${fullFilePath}' 
-    WHERE os_activity_photo.os_id = ${osID} AND os_activity_photo.activity_id = ${activityID} AND os_activity_photo.type = '${photoType}' AND os_activity_photo.index = ${index}
+    SET file = '${fullPathFile}',
+        size = ${size},
+        status = 'enviado',
+        client_check = null
+    WHERE os_activity_photo.os_id = ${osID} AND os_activity_photo.activity_id = ${activityID} AND os_activity_photo.type = '${photoType}' AND os_activity_photo.index = ${index} AND os_activity_photo.type = ${photoType}
     `;
 
     try {
@@ -84,10 +115,16 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
 
       return result;
     } catch (error: any) {
-      console.log(error)
-      await logger(`[REP]: ${JSON.stringify(error)} | os:${osID} | activity:${activityID} index:${index}`);
-      throw new Error(`[REP]: ${JSON.stringify(error)} | os:${osID} | activity:${activityID} index:${index}`);
+      await logger(
+        `[REP]: ${JSON.stringify(
+          error
+        )} | os:${osID} | activity:${activityID} index:${index}`
+      );
+      throw new Error(
+        `[REP]: ${JSON.stringify(
+          error
+        )} | os:${osID} | activity:${activityID} index:${index}`
+      );
     }
-
   }
 }
