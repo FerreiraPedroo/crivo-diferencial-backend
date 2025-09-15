@@ -35,7 +35,7 @@ CREATE TABLE "os_activity_photo" (
 	"type" VARCHAR(20) NOT NULL,
 	"file" VARCHAR(255) NOT NULL,
 	"size" VARCHAR(20) NOT NULL,
-	"status" VARCHAR(20) NOT NULL,
+	"status" INTEGER NOT NULL,
 	"client_check" VARCHAR(20) DEFAULT NULL,
 	PRIMARY KEY("id")
 );

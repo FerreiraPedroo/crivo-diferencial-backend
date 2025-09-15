@@ -13,14 +13,6 @@ interface IUploadActivityPhoto {
   file: Express.Multer.File;
 }
 
-interface ISyncClientActivity {
-  userIDLoged: number;
-  osID: number;
-  activityID: number;
-  photoType: number;
-  index: number;
-}
-
 interface IActivity {
   syncActivity({
     userIDLoged,
@@ -60,10 +52,11 @@ export class SyncActivityService implements IActivity {
         userIDLoged,
         osID,
       });
+      
       if (!existsOs?.length) {
         throw "Ordem de serviço não encontrada.";
       }
-
+      
       const existsActivity = await this.activityRepository.getActivityById({
         osID,
         activityID,
@@ -77,18 +70,18 @@ export class SyncActivityService implements IActivity {
         .split(".")
         .at(-1)}`;
 
-      const existPhoto = await this.activityPhotoRepository.getActivityPhoto({
-        osID,
-        activityID,
-        index,
-      });
-
-      if (existPhoto.length) {
-        try {
-          await StorageFile.saveFile({
-            filePath,
-            fileName,
-            fileBuffer: file.buffer,
+        const existPhoto = await this.activityPhotoRepository.getActivityPhoto({
+          osID,
+          activityID,
+          index,
+        });
+        
+        if (existPhoto.length) {
+          try {
+            await StorageFile.saveFile({
+              filePath,
+              fileName,
+              fileBuffer: file.buffer,
           });
         } catch (error: any) {
           await logger(
@@ -96,16 +89,17 @@ export class SyncActivityService implements IActivity {
           );
           throw error;
         }
-
+        
         const updatedActivityPhoto =
-          await this.activityPhotoRepository.updateActivityPhoto({
-            osID,
-            activityID,
-            photoType,
-            index,
-            size,
-            fullPathFile: `${filePath}${fileName}`,
-          });
+        await this.activityPhotoRepository.updateActivityPhoto({
+          osID,
+          activityID,
+          photoType,
+          index,
+          size,
+          fullPathFile: `${filePath}${fileName}`,
+        });
+        
 
         return updatedActivityPhoto.rows[0];
       } else {
@@ -138,22 +132,11 @@ export class SyncActivityService implements IActivity {
           throw "Foto não foi salva.";
         }
 
-        return savedActivityPhoto.rows[0]
-
+        return savedActivityPhoto.rows[0];
       }
     } catch (error: any) {
       await logger(`[SER]: ${error.message}`);
       return null;
     }
-  }
-
-  async syncClientActivity({
-    userIDLoged,
-    osID,
-    activityID,
-    photoType,
-    index
-  }: ISyncClientActivity){
-
   }
 }

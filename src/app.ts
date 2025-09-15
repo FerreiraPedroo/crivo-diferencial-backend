@@ -12,10 +12,10 @@ app.use(urlencoded({ extended: false }));
 app.use(json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: "GET, POST, PUT, DELETE",
-    credentials: true,
-    exposedHeaders: ["x-crivo-diferencial"],
+    // credentials: true,
+    // exposedHeaders: ["x-crivo-diferencial"],
   })
 );
 

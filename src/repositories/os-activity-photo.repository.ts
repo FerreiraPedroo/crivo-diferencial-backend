@@ -3,6 +3,12 @@ import { logger } from "../utils/logger.ts";
 
 export interface IActivityPhotoRepository {
   getActivityPhoto({ osID, activityID, index }: IGetActivityPhoto): any;
+  getClientActivityPhoto({ activityPhotoID }: IGetClientActivityPhoto): any;
+  validClientActivityPhoto({
+    activityPhotoID,
+    status,
+    clientChecked,
+  }: IValidClientActivityPhoto): any;
   saveActivityPhoto({
     osID,
     activityID,
@@ -44,6 +50,16 @@ interface IGetActivityPhoto {
   index: number;
 }
 
+interface IValidClientActivityPhoto {
+  activityPhotoID: number;
+  status: string;
+  clientChecked: string;
+}
+
+interface IGetClientActivityPhoto {
+  activityPhotoID: number;
+}
+
 export class ActivityPhotoRepository implements IActivityPhotoRepository {
   async getActivityPhoto({ osID, activityID, index }: IGetActivityPhoto) {
     const query = `SELECT * FROM os_activity_photo AS osp WHERE osp.activity_id = ${activityID} AND osp.os_id = ${osID} AND osp.index = ${index}`;
@@ -58,6 +74,18 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
       throw new Error(
         `[REP]: ${error.errors} | os:${osID} | activity:${activityID} index:${index}`
       );
+    }
+  }
+
+  async getClientActivityPhoto({ activityPhotoID }: IGetClientActivityPhoto) {
+    const query = `SELECT * FROM os_activity_photo AS osp WHERE osp.id = ${activityPhotoID}`;
+    try {
+      const result = await pool.query(query);
+      return result.rows;
+    } catch (error: any) {
+      const logError = `[REP]: ${error.errors} | activity:${activityPhotoID}`;
+      await logger(logError);
+      throw new Error(logError);
     }
   }
 
@@ -99,6 +127,14 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
     size,
     fullPathFile,
   }: IUpdateActivityPhoto) {
+    console.log({
+      osID,
+      activityID,
+      photoType,
+      index,
+      size,
+      fullPathFile,
+    });
     const query = `
     UPDATE os_activity_photo 
     SET file = '${fullPathFile}',
@@ -122,6 +158,30 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
           error
         )} | os:${osID} | activity:${activityID} index:${index}`
       );
+    }
+  }
+
+  async validClientActivityPhoto({
+    activityPhotoID,
+    status,
+    clientChecked,
+  }: IValidClientActivityPhoto) {
+    const query = `
+    UPDATE os_activity_photo 
+    SET status = '${status}',
+        client_check = '${clientChecked}'
+    WHERE os_activity_photo.id = ${activityPhotoID}`;
+
+    try {
+      const result = await pool.query(query);
+      return result;
+    } catch (error: any) {
+      const logError = `[REP]: ${JSON.stringify(
+        error
+      )} | acticityID:${activityPhotoID} | clientChecked:${clientChecked} status:${status}`;
+
+      await logger(logError);
+      throw new Error(logError);
     }
   }
 }
