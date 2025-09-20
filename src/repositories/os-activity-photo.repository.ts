@@ -2,7 +2,12 @@ import { pool } from "../database/pg.database.ts";
 import { logger } from "../utils/logger.ts";
 
 export interface IActivityPhotoRepository {
-  getActivityPhoto({ osID, activityID, index }: IGetActivityPhoto): any;
+  getActivityPhoto({
+    osID,
+    activityID,
+    index,
+    photoType,
+  }: IGetActivityPhoto): any;
   getClientActivityPhoto({ activityPhotoID }: IGetClientActivityPhoto): any;
   validClientActivityPhoto({
     activityPhotoID,
@@ -38,7 +43,7 @@ interface IActivityPhoto {
 interface IUpdateActivityPhoto {
   osID: number;
   activityID: number;
-  photoType: number;
+  photoType: string;
   index: number;
   size: number;
   fullPathFile: string;
@@ -48,6 +53,7 @@ interface IGetActivityPhoto {
   osID: number;
   activityID: number;
   index: number;
+  photoType: string;
 }
 
 interface IValidClientActivityPhoto {
@@ -61,8 +67,13 @@ interface IGetClientActivityPhoto {
 }
 
 export class ActivityPhotoRepository implements IActivityPhotoRepository {
-  async getActivityPhoto({ osID, activityID, index }: IGetActivityPhoto) {
-    const query = `SELECT * FROM os_activity_photo AS osp WHERE osp.activity_id = ${activityID} AND osp.os_id = ${osID} AND osp.index = ${index}`;
+  async getActivityPhoto({
+    osID,
+    activityID,
+    index,
+    photoType,
+  }: IGetActivityPhoto) {
+    const query = `SELECT * FROM os_activity_photo AS osp WHERE osp.activity_id = ${activityID} AND osp.os_id = ${osID} AND osp.index = ${index} AND osp.type = '${photoType}'`;
 
     try {
       const result = await pool.query(query);
@@ -127,14 +138,6 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
     size,
     fullPathFile,
   }: IUpdateActivityPhoto) {
-    console.log({
-      osID,
-      activityID,
-      photoType,
-      index,
-      size,
-      fullPathFile,
-    });
     const query = `
     UPDATE os_activity_photo 
     SET file = '${fullPathFile}',

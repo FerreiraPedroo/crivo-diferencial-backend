@@ -30,7 +30,7 @@ export class OrderServiceRepository implements IOrderServiceRepository {
     const query = `SELECT * FROM os WHERE user_id = ${userIDLoged} ${
       queryIN && `AND id NOT IN (${queryIN})`
     }`;
-    console.log(query);
+
     try {
       const result = await pool.query(query);
 

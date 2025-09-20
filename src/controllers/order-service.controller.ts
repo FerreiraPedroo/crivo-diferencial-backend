@@ -101,7 +101,6 @@ export class OrderServiceController {
         index,
         file,
       });
-      console.log(savedPhoto,"OK-----------------------------------------")
 
       if (!savedPhoto) {
         throw "Foto não salva.";
@@ -109,7 +108,7 @@ export class OrderServiceController {
 
       res.status(201).send({ code: 201, message: "OK", data: savedPhoto });
     } catch (error: any) {
-      await logger(`[CRTL]: ${error.message}`);
+      await logger(`[CRTL]: ${error}`);
       res.status(500).send(null);
     }
   }
@@ -121,7 +120,7 @@ export class OrderServiceController {
   ) {
     const userIDLoged = 1;
     const osIDs = req.query.ids as string;
-console.log(osIDs);
+
     try {
       const orderServiceRepository = new OrderServiceRepository();
       const activityRepository = new ActivityRepository();

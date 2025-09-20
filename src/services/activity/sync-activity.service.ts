@@ -8,7 +8,7 @@ interface IUploadActivityPhoto {
   userIDLoged: number;
   osID: number;
   activityID: number;
-  photoType: number;
+  photoType: string;
   index: number;
   file: Express.Multer.File;
 }
@@ -52,36 +52,39 @@ export class SyncActivityService implements IActivity {
         userIDLoged,
         osID,
       });
-      
+
       if (!existsOs?.length) {
         throw "Ordem de serviço não encontrada.";
       }
-      
+
       const existsActivity = await this.activityRepository.getActivityById({
         osID,
         activityID,
       });
+
       if (!existsActivity?.length) {
         throw "Atividade não encontrada.";
       }
+
       const size = file.size;
       const filePath = `uploads/os/${osID}/`;
       const fileName = `${osID}_${activityID}_${photoType}_${index}.${file.originalname
         .split(".")
         .at(-1)}`;
 
-        const existPhoto = await this.activityPhotoRepository.getActivityPhoto({
-          osID,
-          activityID,
-          index,
-        });
-        
-        if (existPhoto.length) {
-          try {
-            await StorageFile.saveFile({
-              filePath,
-              fileName,
-              fileBuffer: file.buffer,
+      const existPhoto = await this.activityPhotoRepository.getActivityPhoto({
+        osID,
+        activityID,
+        index,
+        photoType,
+      });
+
+      if (existPhoto.length) {
+        try {
+          await StorageFile.saveFile({
+            filePath,
+            fileName,
+            fileBuffer: file.buffer,
           });
         } catch (error: any) {
           await logger(
@@ -89,17 +92,16 @@ export class SyncActivityService implements IActivity {
           );
           throw error;
         }
-        
+
         const updatedActivityPhoto =
-        await this.activityPhotoRepository.updateActivityPhoto({
-          osID,
-          activityID,
-          photoType,
-          index,
-          size,
-          fullPathFile: `${filePath}${fileName}`,
-        });
-        
+          await this.activityPhotoRepository.updateActivityPhoto({
+            osID,
+            activityID,
+            photoType,
+            index,
+            size,
+            fullPathFile: `${filePath}${fileName}`,
+          });
 
         return updatedActivityPhoto.rows[0];
       } else {
@@ -115,7 +117,6 @@ export class SyncActivityService implements IActivity {
           );
           throw error;
         }
-
         const fullPathFile = `${filePath}${fileName}`;
 
         const savedActivityPhoto =
@@ -135,7 +136,7 @@ export class SyncActivityService implements IActivity {
         return savedActivityPhoto.rows[0];
       }
     } catch (error: any) {
-      await logger(`[SER]: ${error.message}`);
+      await logger(`[SER]: ${error}`);
       return null;
     }
   }

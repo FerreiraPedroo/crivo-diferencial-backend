@@ -26,7 +26,7 @@ export class HasNewOrderServiceService implements IOrderService {
   async hasNewOrderService({ userIDLoged, osIDs }: IHasNewOrderService) {
     try {
       let osIDsList: string[] = [];
-console.log({ osIDs });
+
       if (osIDs) {
         osIDsList.push(...osIDs.split("|").filter((v) => !!v));
       }
