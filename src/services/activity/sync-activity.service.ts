@@ -68,7 +68,7 @@ export class SyncActivityService implements IActivity {
 
       const size = file.size;
       const filePath = `uploads/os/${osID}/`;
-      const fileName = `${osID}_${activityID}_${photoType}_${index}.${file.originalname
+      const fileName = `${osID}_${activityID}_${index}_${photoType}.${file.originalname
         .split(".")
         .at(-1)}`;
 
