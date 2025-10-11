@@ -27,7 +27,7 @@ export class ExistsActivityService implements IActivity {
 
   async hasNewActivity({ userIDLoged, osID }: IHasNewActivity) {
     try {
-      const existsNewOs = await this.activityRepository.getActivityList({
+      const existsNewOs = await this.activityRepository.getActivityByOsId({
         osID,
       });
 

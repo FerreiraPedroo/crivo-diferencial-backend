@@ -12,5 +12,6 @@ router.post(
   OrderServiceController.syncOrderService
 );
 router.put("/sync", OrderServiceController.syncClientOrderService);
+router.post("/finish", OrderServiceController.finishOrderService);
 
 export { router as ordersServiceRoutes };

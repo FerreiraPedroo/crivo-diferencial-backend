@@ -9,6 +9,7 @@ import { HasNewOrderServiceService } from "../services/order-service/has-new-ord
 import { logger } from "../utils/logger.ts";
 import { ActivityPhotoRepository } from "../repositories/os-activity-photo.repository.ts";
 import { SyncClientActivityService } from "../services/activity/sync-client-activity.service.ts";
+import { FinishOrderServiceService } from "../services/order-service/finish-order-service.service.ts";
 
 interface IParams {
   activityPhotoID?: number;
@@ -83,11 +84,11 @@ export class OrderServiceController {
       if (!(osID && activityID && photoType && index != undefined && file)) {
         throw "Está faltando alguma informação da foto.";
       }
-      
+
       const activityPhotoRepository = new ActivityPhotoRepository();
       const orderServiceRepository = new OrderServiceRepository();
       const activityRepository = new ActivityRepository();
-      
+
       const syncActivity = new SyncActivityService(
         orderServiceRepository,
         activityRepository,
@@ -106,13 +107,49 @@ export class OrderServiceController {
         throw "Foto não salva.";
       }
 
-      res.status(201).send({ code: 201, message: "OK", data: savedPhoto });
+      setTimeout(() => {
+        res.status(201).send({ code: 201, message: "OK", data: savedPhoto });
+      }, 5000);
     } catch (error: any) {
       await logger(`[CRTL]: ${error}`);
       res.status(500).send(null);
     }
   }
+  static async finishOrderService(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const userIDLoged = 1;
+    try {
+      const { osID, status } = req.body;
 
+      if (!(osID && status)) {
+        throw "Está faltando alguma informação da OS.";
+      }
+
+      const orderServiceRepository = new OrderServiceRepository();
+
+      const finishOrderService = new FinishOrderServiceService(
+        orderServiceRepository
+      );
+
+      const finishedOrderService = await finishOrderService.finishOrderService({
+        userIDLoged,
+        osID,
+        status,
+      });
+
+      setTimeout(() => {
+        res
+          .status(201)
+          .send({ code: 201, message: "OK", data: finishedOrderService });
+      }, 1000);
+    } catch (error: any) {
+      await logger(`[CRTL]: ${error}`);
+      res.status(500).send(null);
+    }
+  }
   static async getOrderService(
     req: Request,
     res: Response,

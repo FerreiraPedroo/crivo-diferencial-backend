@@ -9,11 +9,7 @@ export interface IActivityPhotoRepository {
     photoType,
   }: IGetActivityPhoto): any;
   getClientActivityPhoto({ activityPhotoID }: IGetClientActivityPhoto): any;
-  validClientActivityPhoto({
-    activityPhotoID,
-    status,
-    clientChecked,
-  }: IValidClientActivityPhoto): any;
+
   saveActivityPhoto({
     osID,
     activityID,
@@ -54,12 +50,6 @@ interface IGetActivityPhoto {
   activityID: number;
   index: number;
   photoType: string;
-}
-
-interface IValidClientActivityPhoto {
-  activityPhotoID: number;
-  status: string;
-  clientChecked: string;
 }
 
 interface IGetClientActivityPhoto {
@@ -161,30 +151,6 @@ export class ActivityPhotoRepository implements IActivityPhotoRepository {
           error
         )} | os:${osID} | activity:${activityID} index:${index}`
       );
-    }
-  }
-
-  async validClientActivityPhoto({
-    activityPhotoID,
-    status,
-    clientChecked,
-  }: IValidClientActivityPhoto) {
-    const query = `
-    UPDATE os_activity_photo 
-    SET status = '${status}',
-        client_check = '${clientChecked}'
-    WHERE os_activity_photo.id = ${activityPhotoID}`;
-
-    try {
-      const result = await pool.query(query);
-      return result;
-    } catch (error: any) {
-      const logError = `[REP]: ${JSON.stringify(
-        error
-      )} | acticityID:${activityPhotoID} | clientChecked:${clientChecked} status:${status}`;
-
-      await logger(logError);
-      throw new Error(logError);
     }
   }
 }

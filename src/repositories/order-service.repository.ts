@@ -4,6 +4,12 @@ import { logger } from "../utils/logger.ts";
 export interface IOrderServiceRepository {
   hasNewOs({ userIDLoged, osIDsList }: IHasNewOs): any;
   getOs({ userIDLoged, osID }: IGetOs): any;
+  finishOs({ osID, status }: IFinishOs): any;
+}
+
+interface IFinishOs {
+  osID: number;
+  status: string;
 }
 
 interface IGetOs {
@@ -54,6 +60,25 @@ export class OrderServiceRepository implements IOrderServiceRepository {
         `[REP]: ${error.errors} | user:${userIDLoged} | param:${osID}`
       );
       return null;
+    }
+  }
+  async finishOs({ osID, status }: IFinishOs) {
+    const query = `
+    UPDATE os 
+    SET status = '${status}'
+    WHERE id = ${osID}`;
+
+    try {
+      const result = await pool.query(query);
+      return result;
+    } catch (error: any) {
+      console.log(error)
+      const logError = `[REP]: ${JSON.stringify(
+        error
+      )} | OSid:${osID} | status:${status}`;
+
+      await logger(logError);
+      throw new Error(logError);
     }
   }
 }
