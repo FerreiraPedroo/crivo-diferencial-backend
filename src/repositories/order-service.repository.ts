@@ -43,7 +43,7 @@ export class OrderServiceRepository implements IOrderServiceRepository {
       return result.rows;
     } catch (error: any) {
       await logger(
-        `[REP]: ${error.errors} | user:${userIDLoged} | param:${osIDsList}`
+        `[REP]: ${error.message} | user:${userIDLoged} | param:${osIDsList}`
       );
       return [];
     }
@@ -57,7 +57,7 @@ export class OrderServiceRepository implements IOrderServiceRepository {
       return result.rows;
     } catch (error: any) {
       await logger(
-        `[REP]: ${error.errors} | user:${userIDLoged} | param:${osID}`
+        `[REP]: ${error.message} | user:${userIDLoged} | param:${osID}`
       );
       return null;
     }
@@ -72,10 +72,7 @@ export class OrderServiceRepository implements IOrderServiceRepository {
       const result = await pool.query(query);
       return result;
     } catch (error: any) {
-      console.log(error)
-      const logError = `[REP]: ${JSON.stringify(
-        error
-      )} | OSid:${osID} | status:${status}`;
+      const logError = `[REP]: ${error.message} | OSid:${osID} | status:${status}`;
 
       await logger(logError);
       throw new Error(logError);

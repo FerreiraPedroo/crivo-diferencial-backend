@@ -28,7 +28,7 @@ export class HasNewOrderServiceService implements IOrderService {
       let osIDsList: string[] = [];
 
       if (osIDs) {
-        osIDsList.push(...osIDs.split("|").filter((v) => !!v));
+        osIDsList.push(...osIDs.split("|").filter((v) => v));
       }
 
       const existsNewOs = await this.orderServiceRepository.hasNewOs({
@@ -55,7 +55,7 @@ export class HasNewOrderServiceService implements IOrderService {
       return existsNewOs;
     } catch (error: any) {
       await logger(
-        `[SER]: ${error.errors} | userIDLoged:${userIDLoged} | osIDs:${osIDs} `
+        `[SER]: ${error.message} | userIDLoged:${userIDLoged} | osIDs:${osIDs} `
       );
       return [];
     }

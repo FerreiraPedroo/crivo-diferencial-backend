@@ -30,7 +30,7 @@ export interface IActivityPhotoRepository {
 interface IActivityPhoto {
   osID: number;
   activityID: number;
-  photoType: number;
+  photoType: string;
   index: number;
   size: number;
   fullPathFile: string;

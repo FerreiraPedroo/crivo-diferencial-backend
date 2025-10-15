@@ -169,7 +169,7 @@ export class OrderServiceController {
 
       const osList = await osService.hasNewOrderService({ userIDLoged, osIDs });
 
-      res.send(osList);
+      res.status(201).send(osList);
     } catch (error: any) {
       await logger(`[CRTL]: ${error.message}`);
       res.status(500).send([]);

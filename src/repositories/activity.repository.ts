@@ -32,7 +32,7 @@ export class ActivityRepository implements IActivityRepository {
 
       return result.rows;
     } catch (error: any) {
-      await logger(`[REP]: ${error.errors} | os:${osID}`);
+      await logger(`[REP]: ${error.message} | os:${osID}`);
       return [];
     }
   }
@@ -45,7 +45,7 @@ export class ActivityRepository implements IActivityRepository {
 
       return result.rows;
     } catch (error: any) {
-      await logger(`[REP]: ${error.errors} | os:${osID}`);
+      await logger(`[REP]: ${error.message} | os:${osID}`);
       return null;
     }
   }
