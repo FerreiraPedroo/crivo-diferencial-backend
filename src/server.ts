@@ -1,7 +1,7 @@
 import "dotenv/config";
 
-import { app } from "./app.ts";
-import { pool } from "./database/pg.database.ts";
+import { app } from "./app.js";
+import { pool } from "./database/pg.database.js";
 
 app.listen(3000, () => {
   console.log("SERVIDOR ATIVO 🟢");

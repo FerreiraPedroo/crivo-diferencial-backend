@@ -1,8 +1,8 @@
-import { IActivityRepository } from "../../repositories/activity.repository.ts";
-import { IOrderServiceRepository } from "../../repositories/order-service.repository.ts";
-import { IActivityPhotoRepository } from "../../repositories/os-activity-photo.repository.ts";
-import { StorageFile } from "../../utils/storage.ts";
-import { logger } from "../../utils/logger.ts";
+import { IActivityRepository } from "../../repositories/activity.repository.js";
+import { IOrderServiceRepository } from "../../repositories/order-service.repository.js";
+import { IActivityPhotoRepository } from "../../repositories/os-activity-photo.repository.js";
+import { StorageFile } from "../../utils/storage.js";
+import { logger } from "../../utils/logger.js";
 
 interface IUploadActivityPhoto {
   userIDLoged: number;

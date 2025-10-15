@@ -1,6 +1,6 @@
-import { IActivityRepository } from "../../repositories/activity.repository.ts";
-import { IOrderServiceRepository } from "../../repositories/order-service.repository.ts";
-import { logger } from "../../utils/logger.ts";
+
+import { IOrderServiceRepository } from "../../repositories/order-service.repository.js";
+import { logger } from "../../utils/logger.js";
 
 interface IHasNewOrderService {
   userIDLoged: number;

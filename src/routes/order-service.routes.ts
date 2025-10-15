@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { OrderServiceController } from "../controllers/order-service.controller.ts";
+import { OrderServiceController } from "../controllers/order-service.controller.js";
 const uploadFile = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
@@ -11,7 +11,7 @@ router.post(
   uploadFile.single("photo"),
   OrderServiceController.syncOrderService
 );
-router.put("/sync", OrderServiceController.syncClientOrderService);
+// router.put("/sync", OrderServiceController.syncClientOrderService);
 router.post("/finish", OrderServiceController.finishOrderService);
 
 export { router as ordersServiceRoutes };

@@ -1,5 +1,5 @@
-import { IActivityRepository } from "../../repositories/activity.repository.ts";
-import { logger } from "../../utils/logger.ts";
+import { IActivityRepository } from "../../repositories/activity.repository.js";
+import { logger } from "../../utils/logger.js";
 
 interface IHasNewActivity {
   userIDLoged: number;

@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { config } from "../config/config.ts";
+import { config } from "../config/config.js";
 
 const connectionString = "postgresql://postgres@localhost:5432/crivo";
 

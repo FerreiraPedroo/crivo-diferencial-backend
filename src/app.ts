@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
 
-import { ordersServiceRoutes } from "./routes/order-service.routes.ts";
-import { createTables, registers } from "./database/seeds.ts";
-import { pool } from "./database/pg.database.ts";
+import { ordersServiceRoutes } from "./routes/order-service.routes.js";
+import { createTables, registers } from "./database/seeds.js";
+import { pool } from "./database/pg.database.js";
 
 const app = express();
 
