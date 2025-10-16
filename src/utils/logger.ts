@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-const logDir = path.join("./src", "log");
+const logDir = path.join("./", "log");
 const logFilePath = path.join(logDir, "application.log");
 
 export async function logger(message: string) {
