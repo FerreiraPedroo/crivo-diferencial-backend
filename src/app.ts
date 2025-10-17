@@ -4,6 +4,7 @@ import cors from "cors";
 import { ordersServiceRoutes } from "./routes/order-service.routes.js";
 import { createTables, registers } from "./database/seeds.js";
 import { pool } from "./database/pg.database.js";
+import { config } from "./config/config.js";
 
 const app = express();
 
@@ -40,6 +41,8 @@ app.get("/config/db/:iniciar", async (req, res, next) => {
     } else if (iniciar == "os") {
       const c1 = await pool.query("SELECT * FROM os");
       texto["c1"] = c1;
+    } else if (iniciar == "env") {
+      texto["config"] = config;
     }
 
     res.status(201).send(texto);
