@@ -8,8 +8,7 @@ const pool = new Pool({
   port: 5432,
   user: config.pgUser,
   password: config.pgPassword,
-  database: config.pgDatabase,
-  ssl: false,
+  database: config.pgDatabase
 });
 
 pool.on("connect", () => {
