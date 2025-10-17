@@ -26,15 +26,23 @@ app.get("/teste", (req, res, next) => {
 app.use(ordersServiceRoutes);
 
 // ROTAS CONFIG
-// app.get("/config/db", async (req, res) => {
-//   try {
-//     const r1 = await pool.query(createTables[0]);
-//     const r2 = await pool.query(registers[0]);
-//     console.log(r1,r2)
-//   } catch (error) {
-//     console.log(error);
-//   }
+app.get("/config/db/:iniciar", async (req, res, next) => {
+  try {
+    const { iniciar }: any = req.params;
 
-// });
+    let texto: any = { params: iniciar };
+
+    if (iniciar == "sim") {
+        const r1 = await pool.query(createTables[0]);
+      texto["r1"] = r1;
+        const r2 = await pool.query(registers[0]);
+      texto["r2"] = r2;
+    }
+
+    res.status(201).send(texto);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 export { app };

@@ -9,6 +9,7 @@ const pool = new Pool({
   user: config.pgUser,
   password: config.pgPassword,
   database: config.pgDatabase,
+  ssl: false,
 });
 
 pool.on("connect", () => {
