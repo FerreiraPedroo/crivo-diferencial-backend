@@ -33,15 +33,18 @@ app.get("/config/db/:iniciar", async (req, res, next) => {
     let texto: any = { params: iniciar };
 
     if (iniciar == "sim") {
-        const r1 = await pool.query(createTables[0]);
+      const r1 = await pool.query(createTables[0]);
       texto["r1"] = r1;
-        const r2 = await pool.query(registers[0]);
+      const r2 = await pool.query(registers[0]);
       texto["r2"] = r2;
+    } else if (iniciar == "os") {
+      const c1 = await pool.query("SELECT * FROM os");
+      texto["c1"] = c1;
     }
 
     res.status(201).send(texto);
   } catch (error) {
-    console.log(error);
+    return res.status(201).send(error);
   }
 });
 
