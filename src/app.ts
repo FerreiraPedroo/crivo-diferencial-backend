@@ -39,6 +39,9 @@ app.get("/config/db/:iniciar", async (req, res, next) => {
       texto["r1"] = r1;
       const r2 = await pool.query(registers[0]);
       texto["r2"] = r2;
+    } else if (iniciar == "query") {
+      const c0 = await pool.query(iniciar.split("#")[1]);
+      texto["c0"] = c0;
     } else if (iniciar == "os") {
       const c1 = await pool.query("SELECT * FROM os");
       texto["c1"] = c1;
