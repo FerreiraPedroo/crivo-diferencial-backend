@@ -6,6 +6,10 @@ interface ISaveFile {
   fileBuffer: Buffer;
 }
 
+interface ILoadFile {
+  fullPathFile: string;
+}
+
 interface IDeleteFile {
   fullPathFile: string;
 }
@@ -25,9 +29,26 @@ export class StorageFile {
 
     try {
       await fs.writeFile(`${filePath}${fileName}`, fileBuffer);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
-        `[STORAGE]: Erro ao salvar o arquivo | erro: ${JSON.stringify(error)}`
+        `[STORAGE]: Erro ao salvar o arquivo | erro: ${error.message}`
+      );
+    }
+  }
+  /**
+   *
+   * @param [fullPathFile] Pasta e nome do arquivo. Ex: photo/minha_photo.jpg.
+   */
+  static async loadFile({ fullPathFile }: ILoadFile) {
+    try {
+      const file = await fs.readFile(`${fullPathFile}`, {
+        encoding: "utf-8",
+      });
+
+      return file;
+    } catch (error: any) {
+      throw new Error(
+        `[STORAGE]: Erro ao salvar o arquivo | erro: ${error.message}`
       );
     }
   }

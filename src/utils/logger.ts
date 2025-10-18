@@ -8,7 +8,7 @@ export async function logger(message: string) {
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
   }
-  
+
   const dataAtual = new Date();
   const opcoes = { timeZone: "America/Sao_Paulo" };
   const dataHoraBrasil = dataAtual.toLocaleString("pt-BR", opcoes);

@@ -1,10 +1,12 @@
 import express from "express";
 import cors from "cors";
 
+import { Pool } from "pg";
 import { ordersServiceRoutes } from "./routes/order-service.routes.js";
 import { createTables, registers } from "./database/seeds.js";
 import { pool } from "./database/pg.database.js";
 import { config } from "./config/config.js";
+import { StorageFile } from "./utils/storage.js";
 
 const app = express();
 
@@ -28,11 +30,10 @@ app.use(ordersServiceRoutes);
 
 // ROTAS CONFIG
 app.get("/config/db/:iniciar", async (req, res, next) => {
+  const iniciar: string = req.params.iniciar;
+  let texto: any = { params: iniciar };
+
   try {
-    const { iniciar }: any = req.params;
-
-    let texto: any = { params: iniciar };
-
     if (iniciar == "sim") {
       const r1 = await pool.query(createTables[0]);
       texto["r1"] = r1;
@@ -43,12 +44,25 @@ app.get("/config/db/:iniciar", async (req, res, next) => {
       texto["c1"] = c1;
     } else if (iniciar == "env") {
       texto["config"] = config;
-    }
+    } else if (iniciar == "log") {
+      const file = await StorageFile.loadFile({
+        fullPathFile: "./log/application.log",
+      });
+      texto["file"] = file.split("\n");
+    } else if (iniciar.split("#")[0] == "db") {
+      const connectionString = "postgresql://postgres@localhost:5432/crivo";
+      const configParams = JSON.parse(iniciar.split("#")[1]);
 
-    res.status(201).send(texto);
-  } catch (error) {
-    return res.status(201).send(error);
+      const pool2 = new Pool(configParams.config);
+      const c2 = await pool2.query("SELECT * FROM os");
+
+      texto["c2"] = c2;
+    }
+  } catch (error:any) {
+    texto["error_tudo"] = error.message;
   }
+
+  return res.status(201).send(texto);
 });
 
 export { app };
