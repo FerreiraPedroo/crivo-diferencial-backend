@@ -35,8 +35,11 @@ app.get("/config/db/:iniciar", async (req, res, next) => {
 
   try {
     if (iniciar == "sim") {
-      const r1 = await pool.query(createTables[0]);
-      texto["r1"] = r1;
+      try {
+        const r1 = await pool.query(createTables[0]);
+        texto["r1"] = r1;
+      } catch (e) {}
+      
       const r2 = await pool.query(registers[0]);
       texto["r2"] = r2;
     } else if (iniciar == "query") {
@@ -61,7 +64,7 @@ app.get("/config/db/:iniciar", async (req, res, next) => {
 
       texto["c2"] = c2;
     }
-  } catch (error:any) {
+  } catch (error: any) {
     texto["error_tudo"] = error.message;
   }
 
