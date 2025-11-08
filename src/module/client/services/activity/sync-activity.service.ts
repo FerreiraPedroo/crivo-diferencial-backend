@@ -1,8 +1,8 @@
 import { IActivityRepository } from "../../repositories/activity.repository.js";
 import { IOrderServiceRepository } from "../../repositories/order-service.repository.js";
 import { IActivityPhotoRepository } from "../../repositories/os-activity-photo.repository.js";
-import { StorageFile } from "../../utils/storage.js";
-import { logger } from "../../utils/logger.js";
+import { StorageFile } from "../../../../utils/storage.js";
+import { logger } from "../../../../utils/logger.js";
 
 interface IUploadActivityPhoto {
   userIDLoged: number;

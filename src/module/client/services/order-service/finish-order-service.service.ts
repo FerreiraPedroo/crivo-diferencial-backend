@@ -1,6 +1,6 @@
 
 import { IOrderServiceRepository } from "../../repositories/order-service.repository.js";
-import { logger } from "../../utils/logger.js";
+import { logger } from "../../../../utils/logger.js";
 
 interface IHasNewOrderService {
   userIDLoged: number;

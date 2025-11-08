@@ -14,4 +14,4 @@ router.post(
 );
 router.post("/finish", OrderServiceController.finishOrderService);
 
-export { router as ordersServiceRoutes };
+export { router as clientRoutes };

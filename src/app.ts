@@ -2,13 +2,20 @@ import express from "express";
 import cors from "cors";
 
 import { Pool } from "pg";
-import { ordersServiceRoutes } from "./routes/order-service.routes.js";
+import { clientRoutes } from "./module/client/routes/client.routes.js";
+import { adminRoutes } from "./module/admin/routes/admin.routes.js";
 import { createTables, registers } from "./database/seeds.js";
 import { pool } from "./database/pg.database.js";
 import { config } from "./config/config.js";
 import { StorageFile } from "./utils/storage.js";
 
+import fs from "fs"; // ou const fs = require('fs') em CommonJS
+
+
 const app = express();
+
+const publicPath = process.cwd().replaceAll("\\", "/") + "/uploads";
+app.use("/uploads",express.static(publicPath));
 
 app.disable("x-powered-by");
 app.use(express.json());
@@ -22,11 +29,15 @@ app.use(
   })
 );
 
+
 // ROTAS
 app.get("/teste", (req, res, next) => {
   res.send(app.settings);
 });
-app.use(ordersServiceRoutes);
+
+app.use(clientRoutes);
+
+app.use(adminRoutes);
 
 // ROTAS CONFIG
 app.get("/config/db/:iniciar", async (req, res, next) => {
@@ -38,10 +49,16 @@ app.get("/config/db/:iniciar", async (req, res, next) => {
       try {
         const r1 = await pool.query(createTables[0]);
         texto["r1"] = r1;
-      } catch (e) {}
-      
-      const r2 = await pool.query(registers[0]);
-      texto["r2"] = r2;
+      } catch (e) {
+        console.log(e);
+      }
+    } else if (iniciar == "sim2") {
+      try {
+        const r2 = await pool.query(registers[0]);
+        texto["r2"] = r2;
+      } catch (e) {
+        console.log(e);
+      }
     } else if (iniciar == "query") {
       const c0 = await pool.query(iniciar.split("#")[1]);
       texto["c0"] = c0;

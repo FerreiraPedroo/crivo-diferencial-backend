@@ -1,6 +1,6 @@
 import { IActivityRepository } from "../../repositories/activity.repository.js";
 import { IOrderServiceRepository } from "../../repositories/order-service.repository.js";
-import { logger } from "../../utils/logger.js";
+import { logger } from "../../../../utils/logger.js";
 
 interface IHasNewOrderService {
   userIDLoged: number;

@@ -3,12 +3,13 @@ import { NextFunction, Request, Response } from "express";
 import { OrderServiceRepository } from "../repositories/order-service.repository.js";
 import { ActivityRepository } from "../repositories/activity.repository.js";
 
-import { SyncActivityService } from "../services/activity/sync-activity.service.js";
-import { HasNewOrderServiceService } from "../services/order-service/has-new-order-service.service.js";
+import { SyncActivityService } from "../../../services/activity/sync-activity.service.js";
+import { HasNewOrderServiceService } from "../../../services/order-service/has-new-order-service.service.js";
 
-import { logger } from "../utils/logger.js";
+import { logger } from "../../../../../utils/logger.js";
 import { ActivityPhotoRepository } from "../repositories/os-activity-photo.repository.js";
-import { FinishOrderServiceService } from "../services/order-service/finish-order-service.service.js";
+import { FinishOrderServiceService } from "../../../services/order-service/finish-order-service.service.js";
+import { UserRepository } from "../../admin/repositories/user.repository.js";
 
 interface IParams {
   activityPhotoID?: number;
@@ -26,30 +27,10 @@ export class OrderServiceController {
   ) {
     const userIDLoged = 1;
     try {
-      const { osID, activityID, photoType, index } = req.body;
-      const file = req.file;
+      const userRepository = new UserRepository();
 
-      if (!(osID && activityID && photoType && index != undefined && file)) {
-        throw "Está faltando alguma informação da foto.";
-      }
-
-      const activityPhotoRepository = new ActivityPhotoRepository();
-      const orderServiceRepository = new OrderServiceRepository();
-      const activityRepository = new ActivityRepository();
-
-      const syncActivity = new SyncActivityService(
-        orderServiceRepository,
-        activityRepository,
-        activityPhotoRepository
-      );
-      const savedPhoto = await syncActivity.syncActivity({
-        userIDLoged,
-        osID,
-        activityID,
-        photoType,
-        index,
-        file,
-      });
+      const userService = new UserService(userRepository);
+      const savedPhoto = await userService.getNewUserData({ userIDLoged });
 
       if (!savedPhoto) {
         throw "Foto não salva.";

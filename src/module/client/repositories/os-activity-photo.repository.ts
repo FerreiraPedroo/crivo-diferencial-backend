@@ -1,5 +1,5 @@
-import { pool } from "../database/pg.database.js";
-import { logger } from "../utils/logger.js";
+import { pool } from "../../../database/pg.database.js";
+import { logger } from "../../../utils/logger.js";
 
 export interface IActivityPhotoRepository {
   getActivityPhoto({

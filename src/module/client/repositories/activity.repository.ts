@@ -1,5 +1,5 @@
-import { pool } from "../database/pg.database.js";
-import { logger } from "../utils/logger.js";
+import { pool } from "../../../database/pg.database.js";
+import { logger } from "../../../utils/logger.js";
 
 export interface IActivityRepository {
   getActivityByOsId({ osID }: IGetActivityByOsId): any;
@@ -25,7 +25,11 @@ interface IGetActivityByOsId {
 
 export class ActivityRepository implements IActivityRepository {
   async getActivityByOsId({ osID }: IGetActivityByOsId) {
-    const query = `SELECT * FROM os_activity WHERE os_activity.os_id = ${osID}`;
+    const query = `
+    SELECT os_activity.*, activity.name FROM os_activity 
+    LEFT JOIN activity ON os_activity.activity_id = activity.id
+    WHERE os_activity.os_id = ${osID}
+    `;
 
     try {
       const result = await pool.query(query);
@@ -38,7 +42,7 @@ export class ActivityRepository implements IActivityRepository {
   }
 
   async getActivityById({ osID, activityID }: IGetActivity) {
-    const query = `SELECT * FROM os_activity WHERE os_activity.id = ${activityID} AND os_activity.os_id = ${osID}`;
+    const query = `SELECT * FROM os_activity WHERE os_activity.activity_id = ${activityID} AND os_activity.os_id = ${osID}`;
 
     try {
       const result = await pool.query(query);
@@ -50,4 +54,15 @@ export class ActivityRepository implements IActivityRepository {
     }
   }
 
+  async getActivityList() {
+    const queryActivity = `SELECT * FROM activities WHERE status = 'active'`;
+
+    try {
+      const activityList = await pool.query(queryActivity);
+      return activityList.rows;
+    } catch (error: any) {
+      await logger(`[REP]: ${error.message}`);
+      return [];
+    }
+  }
 }

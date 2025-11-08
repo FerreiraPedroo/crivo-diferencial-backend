@@ -1,5 +1,5 @@
-import { pool } from "../database/pg.database.js";
-import { logger } from "../utils/logger.js";
+import { pool } from "../../../database/pg.database.js";
+import { logger } from "../../../utils/logger.js";
 
 export interface IOrderServiceRepository {
   hasNewOs({ userIDLoged, osIDsList }: IHasNewOs): any;
@@ -50,7 +50,7 @@ export class OrderServiceRepository implements IOrderServiceRepository {
   }
   async getOs({ userIDLoged, osID }: { userIDLoged: number; osID: number }) {
     const query = `SELECT * FROM os WHERE user_id = ${userIDLoged} AND id = ${osID}`;
-
+    console.log(query);
     try {
       const result = await pool.query(query);
 
