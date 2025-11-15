@@ -35,16 +35,9 @@ export class ReadOrderServiceService implements IReadOrderServiceService {
         throw "Ordem de serviço não encontrada.";
       }
 
-      const listActivity = await this.activityRepository.getActivityByOs({
+      readOs["activities"] = await this.activityRepository.getActivityByOs({
         osID,
       });
-      console.log(listActivity[0]);
-
-      if (listActivity.length) {
-        readOs["activities"] = listActivity[0].activities;
-      } else {
-        readOs["activities"] = [];
-      }
 
       return readOs;
     } catch (error: any) {

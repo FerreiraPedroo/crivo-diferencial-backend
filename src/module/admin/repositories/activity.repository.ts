@@ -31,7 +31,7 @@ export class AdminActivityRepository implements IAdminActivityRepository {
     `;
     try {
       const result = await pool.query(query);
-      return result.rows;
+      return result.rows.map((a) => a.activities).flat(1);
     } catch (error: any) {
       await logger(`[ADMIN:REP]: ${error.message} | osID:${osID}`);
       throw error.message;

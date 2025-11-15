@@ -49,7 +49,7 @@ export class OrderServiceController {
 
       setTimeout(() => {
         res.status(201).send({ code: 201, message: "OK", data: savedPhoto });
-      }, 5000);
+      }, 1000);
     } catch (error: any) {
       await logger(`[CRTL]: ${error}`);
       res.status(500).send(null);
